@@ -53,6 +53,7 @@ import Signature from 'react-native-signature-canvas';
 | rotated | `boolean` | rotate signature pad 90 degrees
 | imageType | `string` | default is "", "image/jpeg"、"image/svg+xml", imageType of export signature
 | dataURL | `string` | default is "", Base64 string, Draws signature image from data URL.
+| optimizeSvg | `boolean` | groups the paths to apply common stroke parameters and limit point precision to reduce markup size. Default is false.
 | penColor | `string` | default is "black", color of pen
 | backgroundColor | `string` | default is "rgba(255,255,255,1)", backgroundColor of canvas
 | dotSize | `number` | radius of a single dot
