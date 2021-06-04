@@ -32,6 +32,7 @@ const content = `
         backgroundColor: '<%backgroundColor%>',
         dotSize: <%dotSize%>,
         minWidth: <%minWidth%>,
+        optimizeSvg: <%optimizeSvg%>,
     });
 
     function clearSignature (event) {

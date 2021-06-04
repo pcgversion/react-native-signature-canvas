@@ -29,6 +29,7 @@ declare module "react-native-signature-canvas" {
     dotSize?: number,
     minWidth?: number,
     androidHardwareAccelerationDisabled?: boolean;
+    optimizeSvg?: boolean;
     style?: StyleProp<ViewStyle>
   }
 

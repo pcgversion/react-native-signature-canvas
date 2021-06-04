@@ -36,6 +36,7 @@ const SignatureView = forwardRef(({
   backgroundColor = "",
   dotSize = 0,
   minWidth = 0.5,
+  optimizeSvg = false,
   androidHardwareAccelerationDisabled = false,
   style = null,
 }, ref) => {
@@ -52,6 +53,7 @@ const SignatureView = forwardRef(({
     injectedJavaScript = injectedJavaScript.replace(/<%backgroundColor%>/g, backgroundColor);
     injectedJavaScript = injectedJavaScript.replace(/<%dotSize%>/g, dotSize);
     injectedJavaScript = injectedJavaScript.replace(/<%minWidth%>/g, minWidth);
+    injectedJavaScript = injectedJavaScript.replace(/<%optimizeSvg%>/g, optimizeSvg);
     
     let html = htmlContentValue(injectedJavaScript);
     html = html.replace(/<%style%>/g, webStyle);
@@ -61,7 +63,7 @@ const SignatureView = forwardRef(({
     html = html.replace(/<%orientation%>/g, rotated);
 
     return { html };
-  }, [customHtml, autoClear, trimWhitespace, rotated, imageType, webStyle, descriptionText, confirmText, clearText, dataURL])
+  }, [customHtml, autoClear, trimWhitespace, rotated, imageType, webStyle, descriptionText, confirmText, clearText, dataURL, optimizeSvg])
 
   const getSignature = e => {
     switch (e.nativeEvent.data) {

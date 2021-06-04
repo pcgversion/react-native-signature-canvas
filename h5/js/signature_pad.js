@@ -201,6 +201,7 @@ const content = `
           this.backgroundColor = options.backgroundColor || 'rgba(255,255,255,1)';
           this.onBegin = options.onBegin;
           this.onEnd = options.onEnd;
+          this.optimizeSvg = options.optimizeSvg || false;
           this._ctx = canvas.getContext('2d');
           this.clear();
           this.on();
@@ -241,7 +242,7 @@ const content = `
           if (type === void 0) { type = 'image/png'; }
           switch (type) {
               case 'image/svg+xml':
-                  return this._toSVG();
+                  return (this.optimizeSvg) ? this._toOptimizedSVG() : this._toSVG();
               default:
                   return this.canvas.toDataURL(type, encoderOptions);
           }
@@ -466,6 +467,68 @@ const content = `
           }
       };
       SignaturePad.prototype._toSVG = function () {
+        var _this = this;
+        var pointGroups = this._data;
+        var ratio = Math.max(window.devicePixelRatio || 1, 1);
+        var minX = 0;
+        var minY = 0;
+        var maxX = this.canvas.width / ratio;
+        var maxY = this.canvas.height / ratio;
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', this.canvas.width.toString());
+        svg.setAttribute('height', this.canvas.height.toString());
+        this._fromData(pointGroups, function (_a) {
+            var color = _a.color, curve = _a.curve;
+            var path = document.createElement('path');
+            if (!isNaN(curve.control1.x) &&
+                !isNaN(curve.control1.y) &&
+                !isNaN(curve.control2.x) &&
+                !isNaN(curve.control2.y)) {
+                var attr = "M " + curve.startPoint.x.toFixed(3) + "," + curve.startPoint.y.toFixed(3) + " " +
+                    ("C " + curve.control1.x.toFixed(3) + "," + curve.control1.y.toFixed(3) + " ") +
+                    (curve.control2.x.toFixed(3) + "," + curve.control2.y.toFixed(3) + " ") +
+                    (curve.endPoint.x.toFixed(3) + "," + curve.endPoint.y.toFixed(3));
+                path.setAttribute('d', attr);
+                path.setAttribute('stroke-width', (curve.endWidth * 2.25).toFixed(3));
+                path.setAttribute('stroke', color);
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(path);
+            }
+        }, function (_a) {
+            var color = _a.color, point = _a.point;
+            var circle = document.createElement('circle');
+            var dotSize = typeof _this.dotSize === 'function' ? _this.dotSize() : _this.dotSize;
+            circle.setAttribute('r', dotSize.toString());
+            circle.setAttribute('cx', point.x.toString());
+            circle.setAttribute('cy', point.y.toString());
+            circle.setAttribute('fill', color);
+            svg.appendChild(circle);
+        });
+        var prefix = 'data:image/svg+xml;base64,';
+        var header = '<svg' +
+            ' xmlns="http://www.w3.org/2000/svg"' +
+            ' xmlns:xlink="http://www.w3.org/1999/xlink"' +
+            (" viewBox=\\"" + minX + " " + minY + " " + maxX + " " + maxY + "\\"") +
+            (" width=\\"" + maxX + "\\"") +
+            (" height=\\"" + maxY + "\\"") +
+            '>';
+        var body = svg.innerHTML;
+        if (body === undefined) {
+            var dummy = document.createElement('dummy');
+            var nodes = svg.childNodes;
+            dummy.innerHTML = '';
+            for (var i = 0; i < nodes.length; i += 1) {
+                dummy.appendChild(nodes[i].cloneNode(true));
+            }
+            body = dummy.innerHTML;
+        }
+        var footer = '</svg>';
+        var data = header + body + footer;
+        return prefix + btoa(data);
+    };
+
+      SignaturePad.prototype._toOptimizedSVG = function () {
           var _this = this;
           var pointGroups = this._data;
           var ratio = Math.max(window.devicePixelRatio || 1, 1);
@@ -476,25 +539,42 @@ const content = `
           var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
           svg.setAttribute('width', this.canvas.width.toString());
           svg.setAttribute('height', this.canvas.height.toString());
+          
+           var g1 = document.createElement('g');
+           g1.setAttribute('fill', 'none');
+           svg.appendChild(g1);
+
+           var rect1 = document.createElement('rect');
+           rect1.setAttribute('x', minX); 
+           rect1.setAttribute('y', minY); 
+           rect1.setAttribute('width', maxX); 
+           rect1.setAttribute('height', maxY);
+           g1.appendChild(rect1);
+           
+           var g2 = document.createElement('g');
+           g2.setAttribute('fill', 'none'); 
+           g2.setAttribute('stroke', this.penColor); 
+           g2.setAttribute('stroke-width', this.dotSize); 
+           g2.setAttribute('stroke-linecap', 'round');
+           g2.setAttribute('stroke-linejoin', 'round');
+           g1.appendChild(g2);
+
+           var poly1 = document.createElement('path');
+           var poly1attr = '';
+
           this._fromData(pointGroups, function (_a) {
-              var color = _a.color, curve = _a.curve;
-              var path = document.createElement('path');
-              if (!isNaN(curve.control1.x) &&
-                  !isNaN(curve.control1.y) &&
-                  !isNaN(curve.control2.x) &&
-                  !isNaN(curve.control2.y)) {
-                  var attr = "M " + curve.startPoint.x.toFixed(3) + "," + curve.startPoint.y.toFixed(3) + " " +
-                      ("C " + curve.control1.x.toFixed(3) + "," + curve.control1.y.toFixed(3) + " ") +
-                      (curve.control2.x.toFixed(3) + "," + curve.control2.y.toFixed(3) + " ") +
-                      (curve.endPoint.x.toFixed(3) + "," + curve.endPoint.y.toFixed(3));
-                  path.setAttribute('d', attr);
-                  path.setAttribute('stroke-width', (curve.endWidth * 2.25).toFixed(3));
-                  path.setAttribute('stroke', color);
-                  path.setAttribute('fill', 'none');
-                  path.setAttribute('stroke-linecap', 'round');
-                  svg.appendChild(path);
-              }
-          }, function (_a) {
+            var color = _a.color, curve = _a.curve;
+            if (!isNaN(curve.control1.x) &&
+                !isNaN(curve.control1.y) &&
+                !isNaN(curve.control2.x) &&
+                !isNaN(curve.control2.y)) {
+                
+                poly1attr += "M " + curve.startPoint.x.toFixed(0) + "," + curve.startPoint.y.toFixed(0) + " " +
+                    ("C " + curve.control1.x.toFixed(0) + "," + curve.control1.y.toFixed(0) + " ") +
+                    (curve.control2.x.toFixed(0) + "," + curve.control2.y.toFixed(0) + " ") +
+                    (curve.endPoint.x.toFixed(0) + "," + curve.endPoint.y.toFixed(0) + " ");     
+            }
+        }, function (_a) {
               var color = _a.color, point = _a.point;
               var circle = document.createElement('circle');
               var dotSize = typeof _this.dotSize === 'function' ? _this.dotSize() : _this.dotSize;
@@ -504,11 +584,13 @@ const content = `
               circle.setAttribute('fill', color);
               svg.appendChild(circle);
           });
+
+          poly1.setAttribute('d', poly1attr);
+          g2.appendChild(poly1);
+
           var prefix = 'data:image/svg+xml;base64,';
           var header = '<svg' +
               ' xmlns="http://www.w3.org/2000/svg"' +
-              ' xmlns:xlink="http://www.w3.org/1999/xlink"' +
-              (" viewBox=\\"" + minX + " " + minY + " " + maxX + " " + maxY + "\\"") +
               (" width=\\"" + maxX + "\\"") +
               (" height=\\"" + maxY + "\\"") +
               '>';

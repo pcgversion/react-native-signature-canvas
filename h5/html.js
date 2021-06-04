@@ -23,7 +23,7 @@ const content = script =>
     }
     body,html {
       width: 100%;
-      height: 300px;
+      height: 150px;
     }
     * {
         box-sizing: border-box;
@@ -125,7 +125,7 @@ const content = script =>
     
     @media screen and (min-device-width: 768px) and (max-device-width: 1024px) {
       .m-signature-pad {
-        margin: 10%;
+      /*  margin: 10%; */
       }
     }
     
