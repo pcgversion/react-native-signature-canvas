@@ -1,13 +1,14 @@
-# react-native-signature-canvas
+# react-native-signature-canvas-optimized
 
-[![](https://img.shields.io/npm/l/react-native-signature-canvas.svg)](https://www.npmjs.com/package/react-native-signature-canvas)
-[![](https://img.shields.io/npm/v/react-native-signature-canvas)](https://www.npmjs.com/package/react-native-signature-canvas)
-![npm](https://img.shields.io/npm/dt/react-native-signature-canvas)
-![GitHub last commit](https://img.shields.io/github/last-commit/yanyuanfe/react-native-signature-canvas)
+[![](https://img.shields.io/npm/l/react-native-signature-canvas.svg)](https://www.npmjs.com/package/react-native-signature-canvas-optimized)
+[![](https://img.shields.io/npm/v/react-native-signature-canvas-optimized)](https://www.npmjs.com/package/react-native-signature-canvas-optimized)
+![npm](https://img.shields.io/npm/dt/react-native-signature-canvas-optimized)
+![GitHub last commit](https://img.shields.io/github/last-commit/yanyuanfe/react-native-signature-canvas-optimized)
 
 
 React Native Signature Component based Canvas for Android &amp;&amp; IOS &amp;&amp; expo
 
+- Forked from (https://github.com/YanYuanFE/react-native-signature-canvas)
 - Supports Android and iOS and Expo
 - Pure JavaScript implementation with no native dependencies
 - Tested with RN 0.50
@@ -19,19 +20,19 @@ Note: Expo support for React Native Signature Canvas v1.5.0 started with Expo SD
 ## Installation(for React Native V0.60.0 or Expo SDK v35.0.0)
 
 ```bash
-npm install --save react-native-signature-canvas
+npm install --save react-native-signature-canvas-optimized
 ```
 
 ## Installation(for React Native V0.5x.x or Expo SDK < v33)
 
 ```bash
-npm install --save react-native-signature-canvas@1.4.2
+npm install --save react-native-signature-canvas-optimized@1.4.2
 ```
 
 ## Usage
 
 ``` js
-import Signature from 'react-native-signature-canvas';
+import Signature from 'react-native-signature-canvas-optimized';
 ```
 
 ## Properties
@@ -70,7 +71,7 @@ import Signature from 'react-native-signature-canvas';
 
 You need to use ref like:
 ``` js
-import SignatureScreen from 'react-native-signature-canvas';
+import SignatureScreen from 'react-native-signature-canvas-optimized';
 
 const Sign = ({text, onOK}) => {
   const ref = useRef();
@@ -106,6 +107,58 @@ const Sign = ({text, onOK}) => {
 }
 
 export default Sign;
+```
+
+##  Save with optimized SVG xml
+
+If you use expo, you can use **expo-file-system** for save base64 image as local file, if you use react-native-cli, use **react-native-fs**.
+
+``` js
+import * as FileSystem from 'expo-file-system';
+
+const handleSignature = signature => {
+    const path = FileSystem.cacheDirectory + 'sign.svg';
+    FileSystem.writeAsStringAsync(path, signature.replace('data:image/svg+xml;base64,', ''), {encoding: FileSystem.EncodingType.Base64}).then(res => {
+      console.log(res);
+      FileSystem.getInfoAsync(path, {size: true, md5: true}).then(file => {
+        console.log(file);
+      })
+    }).catch(err => {
+      console.log("err", err);
+    })
+};
+
+```
+
+## Basic parameters
+
+``` js
+<Signature
+  // handle when you click save button
+  onOK={(img) => console.log(img)}
+  onEmpty={() => console.log("empty")}
+  // description text for signature
+  descriptionText="Sign"
+  // clear button text
+  clearText="Clear"
+  // save button text
+  confirmText="Save"
+  // String, webview style for overwrite default style, all style: https://github.com/YanYuanFE/react-native-signature-canvas/blob/master/h5/css/signature-pad.css
+  webStyle={`.m-signature-pad--footer
+    .button {
+      background-color: red;
+      color: #FFF;
+    }`
+  }
+  optimizeSvg={true}
+  // Produces SVG signature image by grouping stroke paths 
+  autoClear={true}
+  imageType={"image/svg+xml"}
+  // Optimization only applicable to SVG images
+  dotSize={2.5}
+  // Renders stroke performed on canvas
+  minWidth={2}
+/>
 ```
 
 ##  Save Base64 Image as File
@@ -150,7 +203,6 @@ const handleSignature = signature => {
     }`
   }
   autoClear={true}
-  imageType={"image/svg+xml"}
 />
 
 ```
@@ -180,7 +232,7 @@ const webStyle = `.m-signature-pad--footer
 ``` js
 import React, {useRef} from 'react';
 import { StyleSheet, View, Button } from 'react-native';
-import SignatureScreen from 'react-native-signature-canvas';
+import SignatureScreen from 'react-native-signature-canvas-optimized';
 
 const Sign = ({onOK}) => {
   const ref = useRef();
@@ -207,6 +259,7 @@ const Sign = ({onOK}) => {
           ref={ref}
           onOK={handleSignature} 
           webStyle={style}
+          optimizeSvg={true}
       />
       <View style={styles.row}>
         <Button
@@ -256,7 +309,7 @@ const styles = StyleSheet.create({
 ```js
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import Signature from 'react-native-signature-canvas';
+import Signature from 'react-native-signature-canvas-optimized';
 
 export const SignatureScreen = () => {
   const [signature, setSign] = useState(null);
@@ -293,6 +346,8 @@ export const SignatureScreen = () => {
         clearText="Clear"
         confirmText="Save"
         webStyle={style}
+        imageType="image/svg+xml"
+        optimizeSvg={true}
       />
     </View>
   );
@@ -328,7 +383,7 @@ To use Typescript just import `SignatureViewRef` and in [useRef hook](https://re
 
 ```ts
 import React, { useRef } from 'react';
-import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas';
+import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas-optimized';
 
 interface Props {
   text: string;
@@ -364,6 +419,7 @@ const Sign: React.FC<Props> = ({text, onOK}) => {
         onClear={handleClear}
         autoClear={true}
         descriptionText={text}
+        optimizeSvg={true}
     />
   );
 }
@@ -374,14 +430,14 @@ export default Sign;
 
 ## Example inside ScrollView
 
-When using `react-native-signature-canvas` inside a ScrollView, you will only get a point on the canvas and the ScrollView will handle the gesture making it unused for the canvas.
+When using `react-native-signature-canvas-optimized` inside a ScrollView, you will only get a point on the canvas and the ScrollView will handle the gesture making it unused for the canvas.
 The work around is to use the `scrollEnabled` prop of `ScrollView`.
 Here an example:
 
 ```
 import React, {useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import Signature from 'react-native-signature-canvas';
+import Signature from 'react-native-signature-canvas-optimized';
 
 const SignInScroll = () => {
   const [scrollEnabled, setScrollEnabled] = useState(true);
