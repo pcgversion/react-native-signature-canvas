@@ -1,4 +1,4 @@
-declare module "react-native-signature-canvas" {
+declare module "react-native-signature-canvas-optimized" {
   import React from "react";
   import {StyleProp, ViewStyle} from "react-native";
 
