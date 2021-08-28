@@ -1,5 +1,5 @@
 {
-  "name": "react-native-signature-canvas-optimized",
+  "name": "@pcgnpm/react-native-signature-canvas-optimized",
   "version": "4.1.0",
   "description": "React Native Signature Component based Canvas for Android && IOS && expo with optimiezd option forked from YanYuanFE/react-native-signature-canvas",
   "main": "index.js",
@@ -35,5 +35,6 @@
   },
   "directories": {
     "example": "example"
-  }
+  },
+  "dependencies": {}
 }
