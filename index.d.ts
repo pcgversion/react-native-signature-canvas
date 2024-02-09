@@ -46,6 +46,7 @@ declare module "react-native-signature-canvas" {
     scrollable?: boolean;
     trimWhitespace?: boolean;
     webStyle?: string;
+    optimizeSvg?: boolean;
     webviewContainerStyle?: StyleProp<ViewStyle>;
     androidLayerType?: "none" | "software" | "hardware";
   }

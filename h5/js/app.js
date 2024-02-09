@@ -33,6 +33,7 @@ export default `
         dotSize: <%dotSize%>,
         minWidth: <%minWidth%>,
         maxWidth: <%maxWidth%>,
+        optimizeSvg: <%optimizeSvg%>,
     });
 
     function clearSignature () {

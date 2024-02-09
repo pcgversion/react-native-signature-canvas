@@ -73,6 +73,7 @@ const SignatureView = forwardRef(
       webStyle = "",
       webviewContainerStyle = null,
       androidLayerType = "hardware",
+      optimizeSvg = false,
     },
     ref
   ) => {
@@ -111,6 +112,7 @@ const SignatureView = forwardRef(
         /<%maxWidth%>/g,
         maxWidth
       );
+      injectedJavaScript = injectedJavaScript.replace(/<%optimizeSvg%>/g, optimizeSvg);
 
       let html = htmlContentValue(injectedJavaScript);
       html = html.replace(/<%bgWidth%>/g, bgWidth);
@@ -140,6 +142,7 @@ const SignatureView = forwardRef(
       bgSrc,
       bgWidth,
       bgHeight,
+      optimizeSvg
     ]);
 
     useEffect(() => {
