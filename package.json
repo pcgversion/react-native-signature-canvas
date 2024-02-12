@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/pcgversion/react-native-signature-canvas-optimized",
   "devDependencies": {
-    "react-native-webview": "^11.26.1"
+    "react-native-webview": "^13.7.0"
   },
   "peerDependencies": {
-    "react-native-webview": "^11.26.1"
+    "react-native-webview": "^13.7.0"
   },
   "directories": {
     "example": "example"
