@@ -1,4 +1,4 @@
-const content = `
+export default `
     var wrapper = document.getElementById("signature-pad"),
         clearButton = wrapper.querySelector("[data-action=clear]"),
         saveButton = wrapper.querySelector("[data-action=save]"),
@@ -32,27 +32,52 @@ const content = `
         backgroundColor: '<%backgroundColor%>',
         dotSize: <%dotSize%>,
         minWidth: <%minWidth%>,
+        maxWidth: <%maxWidth%>,
+        optimizeSvg: <%optimizeSvg%>,
     });
 
-    function clearSignature (event) {
+    function clearSignature () {
         signaturePad.clear();
         window.ReactNativeWebView.postMessage("CLEAR");
     }
-
-    clearButton.addEventListener("click", clearSignature );
-
-    var autoClear = <%autoClear%>;
     
-    var trimWhitespace = <%trimWhitespace%>;
+    function undo() {
+        signaturePad.undo();
+        window.ReactNativeWebView.postMessage("UNDO");
+    }
+    
+    function redo() {
+        signaturePad.redo();
+        window.ReactNativeWebView.postMessage("REDO");
+      }
 
-    var dataURL = '<%dataURL%>';
+    function changePenColor(color) {
+        signaturePad.penColor = color;
+        window.ReactNativeWebView.postMessage("CHANGE_PEN");
+    }
 
-    if (dataURL) {
-        signaturePad.fromDataURL(dataURL);
+    function changePenSize(minW, maxW) {
+      signaturePad.minWidth = minW;
+      signaturePad.maxWidth = maxW;
+      window.ReactNativeWebView.postMessage("CHANGE_PEN_SIZE");
+    }
+    
+    function getData () {
+        var data = signaturePad.toData();
+        window.ReactNativeWebView.postMessage(JSON.stringify(data));
+    }
+
+    function draw() {
+      signaturePad.draw();
+      window.ReactNativeWebView.postMessage("DRAW");
+    }
+
+    function erase() {
+      signaturePad.erase();
+      window.ReactNativeWebView.postMessage("ERASE");
     }
 
     function cropWhitespace(url) {
-
         var myImage = new Image();
         myImage.crossOrigin = "Anonymous";
         myImage.onload = function(){
@@ -150,13 +175,22 @@ const content = `
         } else {
             var url = signaturePad.toDataURL('<%imageType%>');
             trimWhitespace? cropWhitespace(url): window.ReactNativeWebView.postMessage(url);
-            if (autoClear) {
-                signaturePad.clear();
-            }
+            if (autoClear) signaturePad.clear();
         }
     }
 
-    saveButton.addEventListener("click", readSignature);
-`;
+    var autoClear = <%autoClear%>;
+    
+    var trimWhitespace = <%trimWhitespace%>;
 
-export default content;
+    var dataURL = '<%dataURL%>';
+
+    if (dataURL) signaturePad.fromDataURL(dataURL);
+
+    clearButton.addEventListener("click", clearSignature );
+
+    saveButton.addEventListener("click", () => {    
+      readSignature();
+      getData();    
+    });
+`;

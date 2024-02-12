@@ -1,11 +1,11 @@
 {
   "name": "react-native-signature-canvas",
-  "version": "4.0.0",
+  "version": "4.7.1",
   "description": "React Native Signature Component based Canvas for Android && IOS && expo",
   "main": "index.js",
   "scripts": {
-    "build": "npm publish",
-    "genlog": "conventional-changelog -p angular -i CHANGELOG.md -s"
+    "genlog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "postversion": "git push --follow-tags"
   },
   "repository": {
     "type": "git",
@@ -27,10 +27,7 @@
     "url": "https://github.com/YanYuanFE/react-native-signature-canvas/issues"
   },
   "homepage": "https://github.com/YanYuanFE/react-native-signature-canvas#readme",
-  "devDependencies": {
-    "react-native-webview": "^11.0.3"
-  },
   "peerDependencies": {
-    "react-native-webview": "^11.0.3"
+    "react-native-webview": ">=13"
   }
 }
